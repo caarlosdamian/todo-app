@@ -1,0 +1,34 @@
+@mixin for-size($size) {
+  @if $size == phone-only {
+    @media (max-width: 599px) {
+      @content;
+    }
+  } @else if $size == lumia {
+    @media (max-width: 440px) {
+      @content;
+    }
+  } @else if $size == tablet-portrait-up {
+    @media (min-width: 768px) {
+      @content;
+    }
+  } @else if $size == tablet-portrait-up {
+    @media (min-width: 900px) {
+      @content;
+    }
+  } @else if $size == desktop-up {
+    @media (min-width: 1200px) {
+      @content;
+    }
+  } @else if $size == big-desktop-up {
+    @media (min-width: 1800px) {
+      @content;
+    }
+  }
+}
+
+@mixin font($size, $weight, $height, $family) {
+  font-weight: $weight;
+  font-size: $size;
+  line-height: $height;
+  font-family: $family;
+}
