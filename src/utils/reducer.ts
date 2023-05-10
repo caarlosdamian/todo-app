@@ -22,5 +22,4 @@ export const todoReducer = (
       return state;
       break;
   }
-  return state;
 };
