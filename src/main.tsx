@@ -9,7 +9,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <ThemeContextProvider>
     <TodoCotextProvider>
       <StrictMode>
-        
       <App />
       </StrictMode>
     </TodoCotextProvider>

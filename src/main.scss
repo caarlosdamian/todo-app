@@ -5,3 +5,29 @@
   font-family: 'Josefin Sans';
   font-style: normal;
 }
+
+.app {
+  display: flex;
+  flex-direction: column;
+  .header {
+    background-image: url('./assets/bg-mobile-light.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 200px;
+    width: 100vw;
+    padding: 48px 24px;
+
+    &.dark{
+      background-image: url('./assets/bg-mobile-dark.jpg');
+    }
+    &__logo{
+      display: flex;
+      justify-content: space-between;
+      .theme__icon{
+        cursor: pointer;
+      }
+    }
+  }
+  .info {
+  }
+}
