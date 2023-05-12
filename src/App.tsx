@@ -35,7 +35,10 @@ export const App = () => {
             className="theme__icon"
           />
         </div>
-        <div className="header__input"></div>
+        <div className={`header__input ${isDarkmodeActive}`}>
+          <div className={`header__input--bubble ${isDarkmodeActive}`}></div>
+          <input type="text" className={`header__input--text ${isDarkmodeActive}`} placeholder='Create a new todo…'/>
+        </div>
       </div>
       <div className="info"></div>
       {/* <button
