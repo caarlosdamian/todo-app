@@ -1,18 +1,18 @@
 export interface TodoListI {
   id: number;
   title: string;
-  status: 'active' | 'completed';
+  status: boolean;
 }
 
 export const todoList:TodoListI[] = [
   {
     id: 1,
     title: 'Firts Todo',
-    status: 'active',
+    status: false,
   },
   {
     id: 2,
     title: 'Second Todo',
-    status: 'completed',
+    status: true,
   },
 ];
