@@ -8,18 +8,15 @@ export const todoReducer = (
   switch (type) {
     case 'addTodo':
       return [...state, payload];
-      break;
     case 'deleteTodo':
       return state.filter((item) => item.id !== payload);
-      break;
     case 'completedTodo':
       return state.map((item) =>
         item.id === payload ? { ...item, status: 'completed' } : item
       );
-      break;
-
+    case 'reorder':
+      return payload;
     default:
       return state;
-      break;
   }
 };

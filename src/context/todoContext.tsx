@@ -5,11 +5,13 @@ import { todoList } from '../utils/data';
 interface TodoContextI {
   state: any;
   dispatch: React.Dispatch<any>;
+  setItems: any;
 }
 
 export const todoContext = createContext<TodoContextI>({
   state: todoList,
   dispatch: () => {},
+  setItems: () => {},
 });
 
 export const TodoCotextProvider = ({
@@ -17,10 +19,12 @@ export const TodoCotextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(todoReducer, todoList);
+  const [items, setItems] = useState(todoList); // Store the IDs of the items
+
+  const [state, dispatch] = useReducer(todoReducer, items);
 
   return (
-    <todoContext.Provider value={{ state, dispatch }}>
+    <todoContext.Provider value={{ state, dispatch, setItems }}>
       {children}
     </todoContext.Provider>
   );

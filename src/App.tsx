@@ -1,11 +1,19 @@
-import { ChangeEvent, useContext, useMemo, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { todoContext } from './context/todoContext';
 import { TodoListI } from './utils/data';
 import { themeContext } from './context/themeContext';
 import { check, logo, moon, sun } from './assets';
+import { Reorder } from 'framer-motion';
 
 export const App = () => {
-  const { dispatch, state } = useContext(todoContext);
+  const { dispatch, state, setItems } = useContext(todoContext);
   const { isDarkmodeActive, darkmode, setDarkmode } = useContext(themeContext);
   const initState = {
     title: '',
@@ -22,12 +30,16 @@ export const App = () => {
     () => state.filter((todo: TodoListI) => todo.status === true),
     [state]
   );
-  const listToShow =
-    showCaseList === 'all'
-      ? state
-      : showCaseList === 'completed'
-      ? completedTodos
-      : activeTodos;
+
+  const listToShow = useMemo(
+    () =>
+      showCaseList === 'all'
+        ? state
+        : showCaseList === 'completed'
+        ? completedTodos
+        : activeTodos,
+    [showCaseList, state]
+  );
 
   const handleChange = (name: string, value: any) => {
     setTodo((prev) => {
@@ -37,7 +49,6 @@ export const App = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log('submit');
     dispatch({
       type: 'addTodo',
       payload: {
@@ -46,6 +57,13 @@ export const App = () => {
       },
     });
     setTodo(initState);
+  };
+
+  const handleDragEnd = (newOrder: any) => {
+    const reorderedList = newOrder.map((id: number) =>
+      state.find((item: TodoListI) => item.id === id)
+    );
+    dispatch({ type: 'reorder', payload: reorderedList });
   };
 
   return (
@@ -86,7 +104,41 @@ export const App = () => {
           />
         </form>
       </div>
-      <div className="info"></div>
+      <div className="info">
+        <div className="info__todo">
+          <div className="info__todo--wrapper">
+            <Reorder.Group
+              axis="y"
+              values={listToShow.map((item: TodoListI) => item.id)}
+              onReorder={(newOrder) => handleDragEnd(newOrder)}
+              className="info__todo--container"
+            >
+              {listToShow.map((item: TodoListI) => {
+                return (
+                  <Reorder.Item
+                    key={item.id}
+                    value={item.id}
+                    className="todo__item"
+                  >
+                    <div
+                      className={`header__input--bubble ${isDarkmodeActive} ${
+                        item.status && 'active'
+                      }`}
+                      onClick={() => handleChange('status', !item.status)}
+                    >
+                      {item.status && <img src={check} alt="check" />}
+                    </div>
+                    <span>{item.title}</span>
+                  </Reorder.Item>
+                );
+              })}
+            </Reorder.Group>
+            <span className="info__todo--subtitle">
+              Drag and drop to reorder list
+            </span>
+          </div>
+        </div>
+      </div>
       {/* <button
         onClick={() =>
           
