@@ -1,70 +1,26 @@
-import {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { todoContext } from './context/todoContext';
-import { TodoListI } from './utils/data';
-import { themeContext } from './context/themeContext';
-import { check, logo, moon, sun } from './assets';
+import { ChangeEvent } from 'react';
+import { TodoListI, todoActions } from './utils/data';
+import { check, cross, logo, moon, sun } from './assets';
 import { Reorder } from 'framer-motion';
+import { useTodos } from './hooks/useTodos';
+import { Bubble } from './components/bubble/Bubble';
 
 export const App = () => {
-  const { dispatch, state, setItems } = useContext(todoContext);
-  const { isDarkmodeActive, darkmode, setDarkmode } = useContext(themeContext);
-  const initState = {
-    title: '',
-    status: false,
-  };
-  const [showCaseList, setShowCaseList] = useState('all');
-  const [todo, setTodo] = useState(initState);
-
-  const activeTodos = useMemo(
-    () => state.filter((todo: TodoListI) => todo.status !== true),
-    [state]
-  );
-  const completedTodos = useMemo(
-    () => state.filter((todo: TodoListI) => todo.status === true),
-    [state]
-  );
-
-  const listToShow = useMemo(
-    () =>
-      showCaseList === 'all'
-        ? state
-        : showCaseList === 'completed'
-        ? completedTodos
-        : activeTodos,
-    [showCaseList, state]
-  );
-
-  const handleChange = (name: string, value: any) => {
-    setTodo((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    dispatch({
-      type: 'addTodo',
-      payload: {
-        id: state.length + 1,
-        ...todo,
-      },
-    });
-    setTodo(initState);
-  };
-
-  const handleDragEnd = (newOrder: any) => {
-    const reorderedList = newOrder.map((id: number) =>
-      state.find((item: TodoListI) => item.id === id)
-    );
-    dispatch({ type: 'reorder', payload: reorderedList });
-  };
+  const {
+    darkmode,
+    dispatch,
+    handleChange,
+    handleDragEnd,
+    handleSubmit,
+    isDarkmodeActive,
+    listToShow,
+    setDarkmode,
+    setItems,
+    setShowCaseList,
+    state,
+    showCaseList,
+    todo,
+  } = useTodos();
 
   return (
     <main className="app">
@@ -82,14 +38,11 @@ export const App = () => {
           className={`header__input ${isDarkmodeActive}`}
           onSubmit={handleSubmit}
         >
-          <div
-            className={`header__input--bubble ${isDarkmodeActive} ${
-              todo.status && 'active'
-            }`}
-            onClick={() => handleChange('status', !todo.status)}
-          >
-            {todo.status && <img src={check} alt="check" />}
-          </div>
+          <Bubble
+            item={todo}
+            handleChange={() => handleChange('status', !todo.status)}
+            isDarkmodeActive={isDarkmodeActive}
+          />
           <input
             type="text"
             className={`header__input--text ${isDarkmodeActive} ${
@@ -104,13 +57,15 @@ export const App = () => {
           />
         </form>
       </div>
-      <div className="info">
-        <div className="info__todo">
-          <div className="info__todo--wrapper">
+      <div className={`info ${isDarkmodeActive}`}>
+        { listToShow.length !== 0 &&  <div className="info__todo">
+          <div className={`info__todo--wrapper ${isDarkmodeActive}`}>
             <Reorder.Group
               axis="y"
               values={listToShow.map((item: TodoListI) => item.id)}
-              onReorder={(newOrder) => handleDragEnd(newOrder)}
+              onReorder={(newOrder) => {
+                showCaseList === 'all' ? handleDragEnd(newOrder) : '';
+              }}
               className="info__todo--container"
             >
               {listToShow.map((item: TodoListI) => {
@@ -118,64 +73,71 @@ export const App = () => {
                   <Reorder.Item
                     key={item.id}
                     value={item.id}
-                    className="todo__item"
+                    className={`todo__item ${isDarkmodeActive}`}
                   >
-                    <div
-                      className={`header__input--bubble ${isDarkmodeActive} ${
+                    <Bubble
+                      item={item}
+                      handleChange={() =>
+                        dispatch({
+                          type: 'completedTodo',
+                          payload: item.id,
+                        })
+                      }
+                      isDarkmodeActive={isDarkmodeActive}
+                    />
+
+                    <span
+                      className={`item__title ${
                         item.status && 'active'
-                      }`}
-                      onClick={() => handleChange('status', !item.status)}
+                      } ${isDarkmodeActive}`}
                     >
-                      {item.status && <img src={check} alt="check" />}
-                    </div>
-                    <span>{item.title}</span>
+                      {item.title}
+                    </span>
+
+                    <img
+                      src={cross}
+                      alt="cross"
+                      className="todo__delete"
+                      onClick={() =>
+                        dispatch({
+                          type: 'deleteTodo',
+                          payload: item.id,
+                        })
+                      }
+                    />
                   </Reorder.Item>
                 );
               })}
             </Reorder.Group>
-            <span className="info__todo--subtitle">
-              Drag and drop to reorder list
+          </div>
+
+          <div className={`info__todo--actions ${isDarkmodeActive}`}>
+            <span className={`todo__info ${isDarkmodeActive}`}>
+              5 items left
+            </span>
+            <div className="todo__actions">
+              {todoActions.map((item) => (
+                <span
+                  className={`actions__title ${
+                    showCaseList === item.value && 'active'
+                  }`}
+                  onClick={() => setShowCaseList(item.value)}
+                >
+                  {item.label}
+                </span>
+              ))}
+            </div>
+            <span className={`todo__info ${isDarkmodeActive}`}>
+              Clear Completed
             </span>
           </div>
-        </div>
+          {showCaseList === 'all' && (
+            <span className={`info__todo--subtitle ${isDarkmodeActive}`}>
+              Drag and drop to reorder list
+            </span>
+          )}
+        </div>}
       </div>
-      {/* <button
-        onClick={() =>
-          
-        }
-      >
-        AddTodo
-      </button>
-      {listToShow?.map((item: TodoListI) => (
-        <div className="todo" key={item.id}>
-          <span>{item.title}</span>
-          <hr />
-          <span>{item.status}</span>
-          <button
-            onClick={() =>
-              dispatch({
-                type: 'completedTodo',
-                payload: item.id,
-              })
-            }
-          >
-            Complete
-          </button>
-          <button
-            onClick={() =>
-              dispatch({
-                type: 'deleteTodo',
-                payload: item.id,
-              })
-            }
-          >
-            Delete
-          </button>
-        </div>
-      ))}
-      <button onClick={() => setShowCaseList('all')}>All</button>
-      <button onClick={() => setShowCaseList('active')}>Active</button>
-      <button onClick={() => setShowCaseList('completed')}>completed</button> */}
     </main>
   );
 };

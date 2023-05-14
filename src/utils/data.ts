@@ -4,7 +4,7 @@ export interface TodoListI {
   status: boolean;
 }
 
-export const todoList:TodoListI[] = [
+export const todoList: TodoListI[] = [
   {
     id: 1,
     title: 'Firts Todo',
@@ -24,5 +24,24 @@ export const todoList:TodoListI[] = [
     id: 4,
     title: '4 Todo',
     status: true,
+  },
+];
+
+export const todoActions = [
+  {
+    id: '2a',
+    label: 'All',
+    value: 'all',
+  },
+  {
+    id: '2b',
+    label: 'Active',
+    value: 'active',
+  },
+  {
+    id: '2c',
+
+    label: 'Completed',
+    value: 'completed',
   },
 ];
