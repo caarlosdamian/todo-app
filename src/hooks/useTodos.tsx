@@ -4,6 +4,7 @@ import { TodoListI } from '../utils/data';
 import { themeContext } from '../context/themeContext';
 
 export const useTodos = () => {
+    // @ts-ignore
   const { dispatch, state, setItems } = useContext(todoContext);
   const { isDarkmodeActive, darkmode, setDarkmode } = useContext(themeContext);
   const initState = {
@@ -21,6 +22,7 @@ export const useTodos = () => {
     () => state.filter((todo: TodoListI) => todo.status === true),
     [state]
   );
+
   const listToShow = useMemo(
     () =>
       showCaseList === 'all'
@@ -68,6 +70,7 @@ export const useTodos = () => {
     setShowCaseList,
     setItems,
     todo,
-    showCaseList
+    showCaseList,
+    activeTodos
   };
 };

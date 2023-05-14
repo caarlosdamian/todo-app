@@ -7,23 +7,23 @@ export interface TodoListI {
 export const todoList: TodoListI[] = [
   {
     id: 1,
-    title: 'Firts Todo',
-    status: false,
-  },
-  {
-    id: 2,
-    title: 'Second Todo',
+    title: '💻 Learn Reactjs',
     status: true,
   },
   {
+    id: 2,
+    title: '🛁 Take a Bath',
+    status: false,
+  },
+  {
     id: 3,
-    title: '3 Todo',
+    title: '📝 Study Math',
     status: true,
   },
   {
     id: 4,
-    title: '4 Todo',
-    status: true,
+    title: '🧽 Wash Dishes',
+    status: false,
   },
 ];
 

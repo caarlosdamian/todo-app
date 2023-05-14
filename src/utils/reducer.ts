@@ -8,7 +8,9 @@ export const todoReducer = (
   let newItems;
   switch (type) {
     case 'addTodo':
-      return [...state, payload];
+      newItems = [...state, payload];
+      window.localStorage.setItem('todo', JSON.stringify(newItems));
+      return newItems;
     case 'deleteTodo':
       newItems = state.filter((item) => item.id !== payload);
       window.localStorage.setItem('todo', JSON.stringify(newItems));
@@ -25,7 +27,12 @@ export const todoReducer = (
       window.localStorage.setItem('todo', JSON.stringify(newItems));
       return newItems;
     case 'reorder':
+      window.localStorage.setItem('todo', JSON.stringify(payload));
       return payload;
+    case 'clearComplete':
+      newItems = state.filter((item) => item.status !== true);
+      window.localStorage.setItem('todo', JSON.stringify(newItems));
+      return newItems;
     default:
       return state;
   }

@@ -1,6 +1,6 @@
 import { ChangeEvent } from 'react';
 import { TodoListI, todoActions } from './utils/data';
-import { check, cross, logo, moon, sun } from './assets';
+import { cross, logo, moon, sun } from './assets';
 import { Reorder } from 'framer-motion';
 import { useTodos } from './hooks/useTodos';
 import { Bubble } from './components/bubble/Bubble';
@@ -15,11 +15,10 @@ export const App = () => {
     isDarkmodeActive,
     listToShow,
     setDarkmode,
-    setItems,
     setShowCaseList,
-    state,
     showCaseList,
     todo,
+    activeTodos,
   } = useTodos();
 
   return (
@@ -58,85 +57,114 @@ export const App = () => {
         </form>
       </div>
       <div className={`info ${isDarkmodeActive}`}>
-        { listToShow.length !== 0 &&  <div className="info__todo">
-          <div className={`info__todo--wrapper ${isDarkmodeActive}`}>
-            <Reorder.Group
-              axis="y"
-              values={listToShow.map((item: TodoListI) => item.id)}
-              onReorder={(newOrder) => {
-                showCaseList === 'all' ? handleDragEnd(newOrder) : '';
-              }}
-              className="info__todo--container"
-            >
-              {listToShow.map((item: TodoListI) => {
-                return (
-                  <Reorder.Item
-                    key={item.id}
-                    value={item.id}
-                    className={`todo__item ${isDarkmodeActive}`}
-                  >
-                    <Bubble
-                      item={item}
-                      handleChange={() =>
-                        dispatch({
-                          type: 'completedTodo',
-                          payload: item.id,
-                        })
-                      }
-                      isDarkmodeActive={isDarkmodeActive}
-                    />
-
-                    <span
-                      className={`item__title ${
-                        item.status && 'active'
-                      } ${isDarkmodeActive}`}
+        {listToShow.length !== 0 && (
+          <div className="info__todo">
+            <div className={`info__todo--wrapper ${isDarkmodeActive}`}>
+              <Reorder.Group
+                axis="y"
+                values={listToShow.map((item: TodoListI) => item.id)}
+                onReorder={(newOrder) => {
+                  showCaseList === 'all' ? handleDragEnd(newOrder) : '';
+                }}
+                className="info__todo--container"
+              >
+                {listToShow.map((item: TodoListI) => {
+                  return (
+                    <Reorder.Item
+                      key={item.id}
+                      value={item.id}
+                      className={`todo__item ${isDarkmodeActive}`}
                     >
-                      {item.title}
-                    </span>
+                      <Bubble
+                        item={item}
+                        handleChange={() =>
+                          dispatch({
+                            type: 'completedTodo',
+                            payload: item.id,
+                          })
+                        }
+                        isDarkmodeActive={isDarkmodeActive}
+                      />
 
-                    <img
-                      src={cross}
-                      alt="cross"
-                      className="todo__delete"
-                      onClick={() =>
-                        dispatch({
-                          type: 'deleteTodo',
-                          payload: item.id,
-                        })
-                      }
-                    />
-                  </Reorder.Item>
-                );
-              })}
-            </Reorder.Group>
-          </div>
+                      <span
+                        className={`item__title ${
+                          item.status && 'active'
+                        } ${isDarkmodeActive}`}
+                      >
+                        {item.title}
+                      </span>
 
-          <div className={`info__todo--actions ${isDarkmodeActive}`}>
-            <span className={`todo__info ${isDarkmodeActive}`}>
-              5 items left
-            </span>
-            <div className="todo__actions">
-              {todoActions.map((item) => (
-                <span
-                  className={`actions__title ${
-                    showCaseList === item.value && 'active'
-                  }`}
-                  onClick={() => setShowCaseList(item.value)}
-                >
-                  {item.label}
+                      <img
+                        src={cross}
+                        alt="cross"
+                        className="todo__delete"
+                        onClick={() =>
+                          dispatch({
+                            type: 'deleteTodo',
+                            payload: item.id,
+                          })
+                        }
+                      />
+                    </Reorder.Item>
+                  );
+                })}
+              </Reorder.Group>
+              <div className={`actions__mobile ${isDarkmodeActive}`}>
+                <span className={`todo__info mobile ${isDarkmodeActive}`}>
+                  {activeTodos?.length < 1
+                    ? `${activeTodos?.length} item left`
+                    : ` ${activeTodos?.length} items left`}
                 </span>
-              ))}
+                <span
+                  className={`todo__info mobile ${isDarkmodeActive}`}
+                  onClick={() =>
+                    dispatch({
+                      type: 'clearComplete',
+                    })
+                  }
+                >
+                  Clear Completed
+                </span>
+              </div>
             </div>
-            <span className={`todo__info ${isDarkmodeActive}`}>
-              Clear Completed
-            </span>
+
+            <div className={`info__todo--actions ${isDarkmodeActive}`}>
+              <span className={`todo__info ${isDarkmodeActive}`}>
+                {activeTodos?.length < 1
+                  ? `${activeTodos?.length} item left`
+                  : ` ${activeTodos?.length} items left`}
+              </span>
+              <div className="todo__actions">
+                {todoActions.map((item) => (
+                  <span
+                    className={`actions__title ${
+                      showCaseList === item.value && 'active'
+                    }`}
+                    onClick={() => setShowCaseList(item.value)}
+                    key={item.id}
+                  >
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+              <span
+                className={`todo__info ${isDarkmodeActive}`}
+                onClick={() =>
+                  dispatch({
+                    type: 'clearComplete',
+                  })
+                }
+              >
+                Clear Completed
+              </span>
+            </div>
+            {showCaseList === 'all' && (
+              <span className={`info__todo--subtitle ${isDarkmodeActive}`}>
+                Drag and drop to reorder list
+              </span>
+            )}
           </div>
-          {showCaseList === 'all' && (
-            <span className={`info__todo--subtitle ${isDarkmodeActive}`}>
-              Drag and drop to reorder list
-            </span>
-          )}
-        </div>}
+        )}
       </div>
     </main>
   );

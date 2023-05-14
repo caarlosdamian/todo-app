@@ -17,11 +17,12 @@ export const ThemeContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [darkmode, setDarkmode] = useState(false);
+  const [darkmode, setDarkmode] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
   const isDarkmodeActive: string = useMemo(
     () => (darkmode ? 'dark' : ''),
     [darkmode]
   );
+
   return (
     <themeContext.Provider value={{ darkmode, setDarkmode, isDarkmodeActive }}>
       {children}
